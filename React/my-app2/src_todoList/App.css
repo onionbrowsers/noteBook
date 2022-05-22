@@ -1,0 +1,16 @@
+#app{
+	font-size: 18px;
+	color: #333
+}
+
+#app .check-count{
+	color: aqua
+}
+
+#app .check-all{
+	margin-right: 12px;
+}
+
+#app .delete-button{
+	float: right;
+}

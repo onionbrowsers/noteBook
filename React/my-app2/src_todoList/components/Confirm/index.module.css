@@ -1,0 +1,36 @@
+.confirm-wrapper{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(50, 50, 50, 0.3);
+    color: #000;
+    z-index: 1;
+}
+.confirm-wrapper .confirm-box{
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+    width: 100%;
+}
+
+.confirm-title{
+    margin-bottom: 12px
+}
+
+.confirm-content{
+    display: flex;
+    justify-content: center
+}
+
+.button-item{
+    margin-right: 12px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.button-confirm{
+    color: red
+}

@@ -1,0 +1,36 @@
+.list-item{
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    box-shadow: 0 0px 5px 0px #ccc;
+    margin-bottom: 12px;
+    position: relative;
+    display: flex;
+}
+
+.list-item .list-item-content{
+    flex: 1;
+    margin-right: 70px;
+}
+
+.list-item .list-button{
+    background: aqua;
+    width: 60px;
+    font-size: 18px;
+    color: #fff;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    border: none;
+}
+
+.list-item:hover{
+    background: #aaa;
+    color: #fff
+}
+
+.list-item:hover .list-button{
+    display: block;
+}
