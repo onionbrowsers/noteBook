@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        /**
+         * genrator 函数的基础用法
+        */
+        // function* test(...arg1) {
+        //     yield 1
+        //     yield function a(...arg2) {console.log(arg1, arg2)}
+        //     yield new Promise((res, rej) => {
+        //         setTimeout(res, 10000)
+        //     })
+        //     yield 4
+        //     return 5
+        // }
+        // let gTest = test('test')
+        // console.log(gTest[Symbol.iterator])
+        // for (let val of gTest) {
+        //     if (typeof val === 'function') {
+        //         val(1, 2, 3)
+        //         continue
+        //     }
+        //     console.log(val)
+        // }
+
+        /**
+         * yield 用法
+         * 1. 只能在*函数中使用‘
+         * 2. 在*函数中 的 其他表达式使用的时候必须是用括号
+        */
+        // function* test() {
+        //     console.log('123' + (yield '456')) // OK
+        //     console.log('123' + yield '456') // error
+        // }
+        // function test2() {
+        //     yield 2 // error
+        // }
+
+        /**
+         * generator实现flat
+        */
+        // const arr = [1, [2, 3, [4, [5, 6], 7], 8], 9]
+
+        // const flat = function* (arr) {
+        //     for (let i = 0; i < arr.length; i++) {
+        //         if (i === 3) return arr[i]
+        //         if ( Array.isArray(arr[i]) ) {
+        //             yield* flat(arr[i])
+        //         } else {
+        //             yield arr[i]
+        //         }
+        //     }
+        // }
+        // const flatArr = [...flat(arr)]
+        // console.log(flatArr)
+
+        /**
+         * next的参数作用
+         * 第一个next传入参数无效，第一个next函数作为启动生成器的作用
+         * next中传入的参数对应为上一个yield语句的返回值使用。因为yield返回值语句默认类似于 return undefined的作用
+        */
+        function* foo(x) {
+            console.log(x)
+            var y = 2 * (yield (x + 1));
+            console.log(x, y, '---')
+            var z = yield (y / 3);
+            console.log(z)
+            return (x + y + z);
+        }
+
+        var a = foo(5);
+        a.next() // Object{value:6, done:false}
+        a.next() // Object{value:NaN, done:false}
+        a.next() // Object{value:NaN, done:true}
+
+        var b = foo(5);
+        b.next() // { value:6, done:false }
+        b.next(12) // { value:8, done:false }
+        b.next(13) // { value:42, done:true }
+
+    </script>
+
+</body>
+</html>

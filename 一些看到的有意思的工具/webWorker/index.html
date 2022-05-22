@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        Worker 输出内容：<span id='app'></span>
+        <input type='text' title='' id='msg'>
+        <button onclick='sendMessage()'>发送</button>
+        <button onclick='stopWorker()'>stop!</button>
+    </div>      
+    <script>
+        const obj = {
+            a: 1
+        }
+        const worker = new Worker('./index.js', {
+            name: 'testWorker'
+        })
+        worker.onmessage = event => {
+            console.log(event, '----')
+            document.getElementById('app').innerHTML = event.data
+        }
+        worker.onerror = error => {
+            console.log(error)
+            worker.terminate()
+        }
+        function sendMessage() {
+            const msg = document.getElementById('msg')
+            worker.postMessage({
+                obj
+            })
+        }
+
+        function stopWorker() {
+            worker.terminate()
+        }
+
+    </script>
+</body>
+</html>

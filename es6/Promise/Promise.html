@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // new Promise((res, rej) => {
+        //     console.log(1)
+        //     return res()
+        // }).then(res => {
+        //     console.log(4)
+        //     return new Promise((res, rej) => {
+        //         setTimeout(res, 2000)
+        //     }).then(res => {
+        //         console.log(10)
+        //     })
+        // }).then(res => {
+        //     console.log(11)
+        // })
+        // new Promise((res, rej) => {
+        //     console.log(2)
+        //     return res()
+        // }).then(res => {
+        //     console.log(5)
+        //     return new Promise((res, rej) => {
+        //         setTimeout(res, 1000)
+        //     }).then(res => {
+        //         console.log(8)
+        //     })
+        // }).then(res => {
+        //     console.log(9)
+        // })
+
+        // new Promise((res, rej) => {
+        //     console.log(3)
+        //     return res()
+        // }).then(res => {
+        //     console.log(6)
+        //     return res
+        // }).then(res => {
+        //     console.log(7)
+        // })
+
+        // new Promise((res, rej) => {
+        //     console.log(3.1)
+        //     return res()
+        // }).then(res => {
+        //     return new Promise((res, rej) => {
+        //         console.log(6.1)
+        //         return res()
+        //     }).then(res => {
+        //         console.log(6.3)
+        //     })
+        // }).then(res => {
+        //     console.log(7.1)
+        // })
+
+        // new Promise((res, rej) => {
+        //     console.log(3.2)
+        //     return res()
+        // }).then(res => {
+        //     return new Promise((res, rej) => {
+        //         console.log(6.2)
+        //         return res()
+        //     }).then(res => {
+        //         console.log(6.4)
+        //     })
+        // }).then(res => {
+        //     console.log(7.2)
+        // })
+
+        // Promise.myAll = function (promiseArr) {
+        //     let promiseCount = 0
+        //     let len = 0
+        //     for (let key of promiseArr) len++
+        //     const resArr = new Array(len)
+        //     return new Promise((res, rej) => {
+        //         if (!len) return res(promiseArr)
+        //         for (let i = 0; i < len; i++) {
+        //             const promise = promiseArr[i]
+        //             if (promise instanceof this) {
+        //                 promise.then(val => {
+        //                     resArr[i] = val
+        //                     if (resArr.every(item => item !== undefined)) res(resArr)
+        //                 }).catch(err => rej(err))
+        //             } else {
+        //                 Promise.resolve(promise).then(val => {
+        //                     resArr[i] = val
+        //                     if (resArr.every(item => item !== undefined)) res(resArr)
+        //                 })
+        //             }
+        //         }
+        //     })
+        // }
+
+        // Promise.myRace = function (promiseArr) {
+        //     return new Promise((res, rej) => {
+        //         for (let promise of promiseArr) {
+        //             if (promise instanceof Promise)  {
+        //                 promise.then(val => res(val)).catch(err => rej(err))
+        //             } else {
+        //                 Promise.resolve(promise).then(val => res(val)).catch(err => rej(err))
+        //             }
+        //         }
+        //     })
+        // }
+
+        // let arr = [Promise.reject(1), new Promise((res, rej) => setTimeout(res, 1000)), Promise.resolve(3), undefined]
+
+        // Promise.myRace(arr).then(proArr => {
+        //     console.log(proArr)
+        // })
+
+        // Promise.allSettled(arr).then(proArr => {
+        //     console.log(proArr)
+        // })
+
+        function getFoo() {
+            return new Promise((res, rej) => {
+                res('foo')
+            })
+        }
+
+        const g = function *() {
+            try {
+                const foo = yield getFoo();
+                console.log(foo)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+        function run(generator) {
+            const it = generator()
+
+            function go(result) {
+                if (result.done) return result.value
+
+                return result.value.then(value => {
+                    return go(it.next(value))
+                }, err => {
+                    return go(it.throw(error))
+                })
+            }
+
+            go(it.next())
+        }
+
+        run(g)
+
+    </script>
+</body>
+</html>

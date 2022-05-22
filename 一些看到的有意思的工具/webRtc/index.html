@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #her-video{
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            width: 500px;
+        }
+        #my-video{
+            position: absolute;
+            top: 120px;
+            left: 480px;
+            width: 100px;
+            z-index: 9999;
+            border:1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <video id="my-video"></video>
+    <video id="her-video"></video>
+    <script>
+        function hasUserMedia() {
+            navigator.getUserMedia = navigator.getUserMedia || navigator.msGetUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            return !!navigator.getUserMedia;
+        }
+
+        function hasRTCPeerConnection() {
+            window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection || window.msRTCPeerConnection;
+            return !!window.RTCPeerConnection;
+        }
+
+        const my = document.getElementById('my-video')
+        const her = document.getElementById('her-video')
+        let myConnection, herConnection
+        navigator.getUserMedia({
+            video: true,
+            audio: false
+        }, stream => {
+            console.log(stream)
+            my.srcObject = stream;
+            my.play()  
+            startPeerConnection(stream)
+        }, err => console.log(err))
+
+        function startPeerConnection(stream) {
+            let config = {
+                'iceServers': [
+                    { 'url': 'stun:stun.services.mozilla.com' },
+                    { 'url': 'stun:stunserver.org' },
+                    { 'url': 'stun:stun.l.google.com:19302' }
+                ]
+            }
+            myConnection = new RTCPeerConnection(config);
+            herConnection = new RTCPeerConnection(config);
+            myConnection.onicecandidate = function(e) {
+                console.log(e)
+                if (e.candidate) {
+                    herConnection.addIceCandidate(new RTCIceCandidate(e.candidate));
+                }
+            }
+            herConnection.onicecandidate = function(e) {
+                if (e.candidate) {
+                    myConnection.addIceCandidate(new RTCIceCandidate(e.candidate));
+                }
+            }
+
+            herConnection.onaddstream = function(e) {
+                her.srcObject = e.stream
+                her.play()
+            }
+            myConnection.addStream(stream);
+
+            myConnection.createOffer().then(offer => {
+                myConnection.setLocalDescription(offer)
+                herConnection.setRemoteDescription(offer);
+                herConnection.createAnswer().then(answer => {
+                    herConnection.setLocalDescription(answer);
+                    //本方接收到一个answer
+                    myConnection.setRemoteDescription(answer);
+                })
+            })
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/index.css">
+    <script src="/react全家桶资料/03_依赖包/旧版本/react.development.js"></script>
+    <script src="/react全家桶资料/03_依赖包/旧版本/react-dom.development.js"></script>
+    <script src="/react全家桶资料/03_依赖包/旧版本/babel.min.js"></script>
+    <script src="/react全家桶资料/03_依赖包/旧版本/prop-types.js"></script>
+</head>
+<body>
+    <div id="test"></div>
+    <!-- <script src="/index.jsx" type="text/babel"></script> -->
+    <!-- <script src="/state.jsx" type="text/babel"></script> -->
+    <!-- <script src="/props.jsx" type="text/babel"></script> -->
+    <script src="/refs.jsx" type="text/babel"></script>
+    <script>
+        class Car {
+            a = 1
+            #b = 2
+            static c = 3
+            consle() {
+                console.log(this.#b, Car.c)
+            }
+            test = function () {
+                console.log(this)
+            }
+            static staticFunc() {
+                console.log(this)
+            }
+        }
+        const car = new Car()
+        console.log(car.a, car.b, car.c)
+        car.consle()
+        car.test()
+        // 类中的函数定义自动开启严格模式，this为undefined
+        let test = car.test
+        test()
+        Car.staticFunc()
+    </script>
+</body>
+</html>

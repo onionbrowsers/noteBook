@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Promise.all(), 解构赋值 和 扩展运算符（...） 和 yield* (必须有*) 都是用iterator实现
+
+        /**
+         * iterator的使用
+        */
+        // let obj = {
+        //     [Symbol.iterator]() {
+        //         let index = 0
+        //         return {
+        //             next() {
+        //                 if (index < 10) {
+        //                     return {
+        //                         value: index++,
+        //                         done: false
+        //                     }
+        //                 }
+        //                 console.log(123)
+        //                 return {
+        //                     value: index + ' over',
+        //                     done: true
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        // for (let val of obj) {
+        //     console.log(val)
+        // }
+
+        /**
+         * iterator 和 generator 函数
+        */
+        // let myIterable = {
+        //     // [Symbol.iterator]: function* () {
+        //     //     yield 1
+        //     //     yield 2
+        //     //     yield 3
+        //     // }
+        //     *[Symbol.iterator]() {
+        //         yield 1
+        //         yield 2
+        //         yield 3
+        //     }
+        // }
+
+        // for (let val of myIterable) {
+        //     console.log(val)
+        // }
+
+        /**
+         * iterator 的 return 和 throw 方法
+         * throw在generator中体现
+        */
+        let myIterable = {
+            [Symbol.iterator]() {
+                let index = 0
+                return {
+                    next() {
+                        if (index < 10) return new Promise((res, rej) => {
+                            setTimeout(() => {
+                                res(index++)
+                            }, 100);
+                        })
+                        return {
+                            value: 'over',
+                            done: true
+                        }
+                    },
+                    return() {
+                        console.log(123)
+                        return new Promise((res, rej) => {
+                            setTimeout(() => {
+                                res()
+                            }, 100);
+                        })
+                    }
+                }
+            }
+        }
+
+        for (let val of myIterable) {
+            if (val === 5) {
+                console.log(val)
+                break
+            }
+            console.log(val)
+        }
+
+    </script>
+</body>
+</html>

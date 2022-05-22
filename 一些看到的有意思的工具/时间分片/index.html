@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @keyframes move {
+            from {
+                left: 0;
+            }
+            to {
+                left: 100%;
+            }
+        }
+        .move  {
+            position: absolute;
+            animation: move 2s linear infinite;
+            width: 100px;
+            height: 100px;
+            background: aqua;
+        }
+    </style>
+</head>
+<body>
+    <div class="move">
+    </div>
+    <script>
+
+        function timeslice(fnc) {
+            if(fnc.constructor.name !== 'GeneratorFunction') return fnc()
+
+            return async function (...args) {
+                const fnc_ = fnc(...args)
+                let data
+                do {
+                    data = fnc_.next()
+                    await new Promise( resolve => setTimeout(resolve))
+                } while (!data.done)
+
+                return data.value
+            }
+        }
+
+        function timeSlice_(fnc, time = 25, cb = setTimeout) {
+            if(fnc.constructor.name !== 'GeneratorFunction') return fnc()
+
+            return function (...args) {
+                const fnc_ = fnc(...args)
+                let data
+
+                return new Promise(function go(resolve, reject) {
+                    try {
+                        const start = performance.now()
+
+                        do {
+                            data = fnc_.next()
+                        } while (!data.done && performance.now() - start < time)
+
+                        if (data.done) return resolve(data.value)
+
+                        cb(() => go(resolve, reject))
+                    } catch(e) {
+                        reject(e)
+                    }
+                })
+            }
+        }
+
+        function * fnc_ () {
+            let i = 0
+            const start = performance.now()
+            while (performance.now() - start <= 2000) {
+                console.log(i, '---')
+                yield i++
+            }
+
+            return i
+        }
+        setTimeout(async () => {
+            // const start = performance.now()
+            // const fnc = timeslice(fnc_)
+            // const num = await fnc()
+            // console.log(num, 'num')
+            // console.log(performance.now() - start)
+            const start1 = performance.now()
+            const fnc1 = timeSlice_(fnc_)
+            const num1 = await fnc1()
+            console.log(num1, 'num1')
+            console.log(performance.now() - start1)
+
+        }, 1000)
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const dataBase = window.indexedDB.open('person', 1)
+        let db
+
+        dataBase.onerror = error => {
+            console.log(error)
+        }
+
+        dataBase.onsuccess = event => {
+            console.log(event, 'success')
+        }
+
+        dataBase.onupgradeneeded = event => {
+            console.log(111)
+            db = event.target.result
+            let objectStore
+            if (!db.objectStoreNames.contains('person')) {
+                objectStore = db.createObjectStore('person', {
+                    keyPath: 'id'
+                })
+            }
+            objectStore.createIndex('name', 'name', {unique: true})
+            objectStore.createIndex('email', 'email', {unique: true})
+            console.log(db, objectStore)
+            objectStore.transaction.oncomplete = (event) => {
+                console.log(event)
+                add()
+            }
+        }
+
+        function add() {
+            const request = db.transaction(['person'], 'readwrite').objectStore('person').add({ id: 1, name: '张三', age: 24, email: 'zhangsan@example.com' })
+            request.onsuccess = event => {
+                console.log(event, '---')
+            }
+            request.onerror = error => {
+                console.log(error, '---')
+            }
+        }
+
+    </script>
+</body>
+</html>

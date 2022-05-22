@@ -1727,3 +1727,210 @@ Object.getPrototypeOf(true) === Boolean.prototype // true
 // undefined和null由于无法转换成对象所以会报错
 ```
 
+## Symbol
+
+### 1. 描述
+
+ES6 引入了一种新的原始数据类型`Symbol`，表示独一无二的值。它是 JavaScript 语言的第七种数据类型，前六是：`undefined`、`null`、布尔值（Boolean）、字符串（String）、数值（Number）、对象（Object）。
+
+Symbol 值通过`Symbol`函数生成。这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的 Symbol 类型。凡是属性名属于 Symbol 类型，就都是独一无二的，可以保证不会与其他属性名产生冲突。
+
+```js
+let s = Symbol
+typeof s // symbol
+```
+
+**<span style="color:red">注意：</span>`Symbol`函数前不能使用`new`命令，否则会报错。这是因为生成的 Symbol 是一个原始类型的值，不是对象。也就是说，由于 Symbol 值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。**
+
+`Symbol`函数可以接受一个字符串作为参数，表示对 Symbol 实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
+
+```js
+let s1 = Symbol('foo')
+let s2 = Symbol('bar')
+
+s1 // Symbol(foo)
+s2 // Symbol(bar)
+
+s1.description // 'foo'
+```
+
+**<span style="color:red">注意：</span>Symbol 值不能与其他类型的值进行运算，会报错。**
+
+```js
+let sym = Symbol('aaa')
+sym + 'your symbol is' // Uncaught TypeError: Cannot convert a Symbol value to a string
+```
+
+### 2. Symbol作为属性名
+
+```js
+let mySymbol = Symbol()
+
+// 因为Symbol是独一无二的，所以这个属性是独一无二的，不会被覆盖
+
+// 1.
+let obj = {}
+obj[mySymbol] = 'test'
+
+// 2.
+obj = {
+  [mySymmbol]: 'test'
+}
+
+// 3.
+let obj = {}
+Object.definePropoty(obj, mySymbol, {
+  test: 'value'
+})
+```
+
+**<span style="color: red">注意：</span>Symbol 值作为对象属性名时，不能用点运算符。**
+
+```js
+const mySymbol = Symbol();
+const a = {};
+
+a.mySymbol = 'Hello!';
+a[mySymbol] // undefined
+a['mySymbol'] // "Hello!"
+```
+
+### 3. 属性名的遍历
+
+**<span style="color: red">注意：</span>Symbol 作为属性名，遍历对象的时候，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`返回。**
+
+**获取Symbol属性的方法：`Object.getOwnPropertySymbols()`**
+
+```js
+const obj = {}
+let a = Symbol('a')
+let b = Symbol('b')
+obj[a] = 'a'
+obj[b] = 'b'
+
+const objectSymbols = Object.getOwnPropertySymbols(obj)
+
+// objectSymbols [Symbol(a), Symbol(b)]
+```
+
+**由于以 Symbol 值作为键名，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。**
+
+```js
+let size = Symbol('size')
+
+class Collection {
+  constructor() {
+    this[size] = 0
+  }
+  add(item) {
+    this[this[size]] = item
+    this[size]++
+  }
+  static sizeof(instance) {
+    return instance[size]
+  }
+}
+
+let x = new Collection()
+Collection.sizeof(x) // 0
+
+x.add('foo')
+Collection.sizeof(x) // 1
+```
+
+### 4. Symbol.for()，Symbol.keyFor()
+
+#### (1). Symbol.for()
+
+当需要同一个Symbol值的时候（可能多人开发，但是又功能相同的时候）`Symbol.for()`方法可以做到这一点。
+
+```js
+let s1 = Symbol('foo')
+let s2 = Symbol('foo')
+
+s1 === s2 // true
+```
+
+**`Symbol.for()`与`Symbol()`这两种写法，都会生成新的 Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。**
+
+#### (2). Symbol.keyfor()
+
+`Symbol.keyFor()`方法返回一个已登记的 Symbol 类型值的`key`。
+
+```js
+let s1 = Symbol.for('foo')
+Symbol.keyfor(s1) // foo
+
+let s2 = Symbol('foo')
+Symbol.keyfor(s2) // undefined
+```
+
+### 5. 内置的Symbol值
+
+#### (1). Symbol.hasInstance
+
+对象的`Symbol.hasInstance`属性，指向一个内部方法。当其他对象使用`instanceof`运算符，判断是否为该对象的实例时，会调用这个方法。比如，`foo instanceof Foo`在语言内部，实际调用的是`Foo[Symbol.hasInstance](foo)`。
+
+```js
+class MyClass {
+  [Symbol.hasInstance](foo) {
+    return foo instanceof Array
+  }
+}
+[1, 2, 3] instanceof new MyClass() // true
+```
+
+#### (2). Symbol.isConcatSpreadable
+
+对象的`Symbol.isConcatSpreadable`属性等于一个布尔值，表示该对象用于`Array.prototype.concat()`时，是否可以展开。
+
+```js
+let arr1 = ['c', 'd']
+['a', 'b'].concat(arr1, 'e') // ['a', 'b', 'c', 'd', 'e']
+arr1[Symbol.isConcatSpreadable] // undefined
+
+let arr2 = ['c', 'd']
+arr2[Symbol,isConcatSpreadable] = false
+['a', 'b'].concat(arr2, 'e') // ['a', 'b', ['c', 'd'], 'e']
+```
+
+类似数组的对象正好相反，默认不展开。它的`Symbol.isConcatSpreadable`属性设为`true`，才可以展开。
+
+```js
+// 类数组情况
+let obj = {
+ 	0: 'c',
+  1: 'd',
+  length: 2
+}
+['a', 'b'].concat(obj , 'e') // ['a', 'b', obj, 'e']
+
+obj[Symbol.isConcatSpreadable] = true
+['a', 'b'].concat(obj , 'e') // ['a', 'b', 'c', 'd', 'e']
+```
+
+## Set和Map数据结构
+
+### 1. Set
+
+ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
+
+`Set`本身是一个构造函数，用来生成 Set 数据结构。
+
+``` js
+const arr = [2, 3, 4, 5, 1, 2, 3, 5, 1, 5, 2, 4, 3]
+
+const set = new Set(arr)
+
+const set1 = new Set()
+
+for (let i = 0; i < arr.length; i++) {
+  set1.add(arr[i])
+}
+
+// [2, 3, 4, 5, 1]
+Object.prototype.toString.call(set) // [object, Set]
+```
+
+ 
+

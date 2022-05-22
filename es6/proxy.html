@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        /**
+         * proxy基础用法
+        */
+        // const obj = {}
+        // const proxy = new Proxy(obj, {
+        //     get(target, propKey, receiver) {
+        //         console.log(target, propKey, receiver, 'get value')
+        //         return Reflect.get(target, propKey, receiver)
+        //     },
+        //     set(target, propKey, value, receiver) {
+        //         console.log(target, propKey, value, receiver, 'set value')
+        //         return Reflect.set(target, propKey, value, receiver)
+        //     }
+        // })
+        // proxy.a = 1
+        // console.log(proxy.a)
+        // console.log(obj, '---')
+        // obj.b = 2
+        // console.log(proxy, obj)
+
+        /** 
+         * proxy进阶用法
+         * apply 和 construct 在函数中使用, 调用函数时执行apply， 获取原型的时候用construct
+        */
+        // const handler = {
+        //     get(target, name) {
+        //         console.log(this, '---')
+        //         if (name === 'prototype') return Object.prototype
+        //         return 'Hello ' + name
+        //     },
+        //     apply(target, thisBinding, args) {
+        //         console.log(target, thisBinding, args, 'apply')
+        //         return target(...args)
+        //     },
+        //     construct(target, args) {
+        //         console.log(target, args, 'construct')
+        //         return {value: args[1]}
+        //     },
+        //     test: function () {
+        //         console.log(this, 'test')
+        //     }
+        // }
+
+        // const fProxy = new Proxy(function (x, y) {
+        //     console.log(x, y)
+        //     return x + y
+        // }, handler)
+
+        // console.dir(fProxy(1, 2), '--')
+        // new fProxy(1, 2)
+        // console.log(fProxy.prototype)
+
+        /**
+         * proxy的get用法
+        */
+        // function createArray(...elements) {
+        //     const handler = {
+        //         get(target, propKey, receiver) {
+        //             let index = Number(propKey) || 0
+        //             if (index < 0) index = target.length + index
+        //             return Reflect.get(target, index, receiver)
+        //         }
+        //     }
+
+        //     let target = []
+        //     target.push(...elements)
+        //     return new Proxy(target, handler)
+        // }
+        // let arr = createArray(1, 2, 3)
+        // console.log(arr['1'])
+
+        // const pipe = function (value) {
+        //     const funcStack = []
+        //     const oProxy = new Proxy({}, {
+        //         get(pipeObj, fnName) {
+        //             if (fnName === 'get') {
+        //                 return funcStack.reduce((val, fn) => {
+        //                     return fn(val)
+        //                 }, value)
+        //             }
+        //             funcStack.push(stepFn[fnName])
+        //             return oProxy
+        //         }
+        //     })
+        //     return oProxy
+        // }
+
+        // const stepFn = {
+        //     double: n => n * 2,
+        //     pow: n => n * n,
+        //     revererInt : n => n.toString().split('').reverse().join('') | 0
+        // }
+        // let str = pipe(3).double.pow.revererInt.get
+        // console.log(str)
+
+        /** 
+         * proxy完成类AST 
+        */
+        // const dom = new Proxy({}, {
+        //     get(target, propKey) {
+        //         return function (attrs = {}, ...children) {
+        //             const el = document.createElement(propKey)
+        //             for (let key in attrs) {
+        //                 el.setAttribute(key, attrs[key])
+        //             }
+        //             for (let child of children) {
+        //                 if (typeof child === 'string') {
+        //                     child = document.createTextNode(child)
+        //                 }
+        //                 el.appendChild(child)
+        //             }
+        //             return el
+        //         }
+        //     }
+        // })
+
+        // const el = dom.div({}, 
+        //     'Hello, my name is ',
+        //     dom.a({
+        //         href: 'https://www.baidu.com'
+        //     }, 'Mark'),
+        //     '. I like: ',
+        //     dom.ul({}, 
+        //         dom.li({}, 'The web'),
+        //         dom.li({}, 'food'),
+        //         dom.li({}, '...actually')
+        //     )
+        // )
+
+        // document.body.appendChild(el)
+
+        /**
+         * proxy set 私有化属性
+        */
+        // const handler = {
+        //     get(target, key) {
+        //         invariant(key, 'get')
+        //         return target[key]
+        //     },
+        //     set(target, key, value) {
+        //         invariant(key, 'set')
+        //         target[key] = value
+        //         return true
+        //     }
+        // }
+
+        // function invariant(key, action) {
+        //     if (key[0] === '_') throw new Error(`Invalid attempt to ${action} private "${key}" property`)
+        // }
+
+        // const target = {}
+        // const proxy = new Proxy(target, handler)
+        // proxy._prop = 1
+
+        /**
+         * proxy的apply属性
+        */
+        // const handler = {
+        //     apply(targrt, ctx, args) {
+        //         return Reflect.apply(...args)
+        //     }
+        // }
+
+        // const target = function () { return 'i am the target' }
+        // const handler = {
+        //     apply(target, ctx, args) {
+        //         console.log(target, ctx, args)
+        //         return 'i am the proxy'
+        //     }
+        // }
+
+        // const p = new Proxy(target, handler)
+        // console.log(p(1, 2, 3))
+
+        /**
+         *  proxy的construct属性
+        */
+        // const p = new Proxy(function () {}, {
+        //     construct: function(target, args) {
+        //     console.log('called: ' + args.join(', '));
+        //         return { value: args[0] * 10 };
+        //     }
+        // });
+
+        // (new p(1)).value
+
+        // error 返回值不是对象报错
+        // const p = new Proxy(function() {}, {
+        //     construct: function(target, argumentsList) {
+        //         return 1;
+        //     }
+        // });
+
+        /**
+         * proxy的deleteProperty属性
+        */
+        // const handler = {
+        //     deleteProperty(target, key) {
+        //         // return delete target[key]
+        //     }
+        // }
+
+        // const proxy = new Proxy({a: 1}, handler)
+
+        // console.log(proxy)
+
+        /**
+         * proxy的defineProperty
+        */
+        // const handler = {
+        //     defineProperty(target, key, descriptor) {
+        //         console.log(target, key, descriptor)
+        //         Reflect.defineProperty(target, key, descriptor)
+        //         return true
+        //     }
+        // }
+
+        // const target = {a: 1}
+        // const proxy = new Proxy(target, handler)
+
+        // proxy.foo = 'bar'
+
+        // Object.defineProperties(proxy, {
+        //     // 默认只有value, 其余都是false
+        //     test: {
+        //         value: 1,
+        //         writable: true
+        //     },
+        //     _b: {
+        //         value: 2,
+        //         enumerable: true,
+        //         writable: true,
+        //         configurable: true
+        //     },
+        //     b: {
+        //         get() {
+        //             return this._b
+        //         },
+        //         set(val) {
+        //             this._b = val * 2
+        //             return true
+        //         }
+        //     }
+        // })
+
+        
+        /**
+         * Proxy 的 ownkeys 属性
+        */
+        // const handler = {
+        //     ownKeys(...args) {
+        //         console.log(args)
+        //         // 必须返回数组，且数组内必须是字符串或者symbol值
+        //         return []
+        //     }
+        // }
+
+        // const obj = {
+        //     a: 1,
+        //     b: 2,
+        //     c: 3
+        // }
+
+        // const proxy = new Proxy(obj, handler)
+
+        // console.log(proxy, '---')
+        // console.log(Object.keys(proxy))
+
+        /**
+         * proxy的this指向问题
+        */
+        
+        // const target = {
+        //     getThis() {
+        //         console.log(this)
+        //         return this
+        //     }
+        // }
+
+        // const proxy = new Proxy(target, {})
+
+        // console.log(target.getThis() === proxy.getThis())
+        
+        // const target = new Date('2015-01-01');
+        // const handler = {
+        //     get(target, prop) {
+        //         return target[prop].bind(target)
+        //     }
+        // };
+        // const proxy = new Proxy(target, handler);
+
+        // console.log(proxy.getDay())
+
+        /**
+         * reflect 的 set 和 proxy 的 set 问题查看 
+        */
+        const obj = {}
+        const handler = {
+            set(target, key, value, receiver) {
+                console.log('set')
+                return Reflect.set(receiver, key, value, target)
+            },
+            defineProperty(target, key, descriptor) {
+                console.log('define')
+                return Reflect.defineProperty(target, key, descriptor)
+            }
+        }
+
+        const proxy = new Proxy(obj, handler)
+        proxy.a = 1
+        obj.b = 2
+
+        // Object.defineProperty(proxy, 'b', {
+        //     value: '2'
+        // })
+        
+
+    </script>
+</body>
+</html>
