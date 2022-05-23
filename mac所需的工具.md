@@ -4,7 +4,7 @@
 
 **iterm**
 
-**oh my zsh**
+**oh my zsh**	
 
 ## IDE
 
@@ -79,5 +79,4 @@
 10. n
 11. http-server
 12. nrm
-13. 
 
