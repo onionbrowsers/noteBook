@@ -1,0 +1,72 @@
+{
+    "name": "@z-toolkit/fe-build",
+    "version": "0.0.0",
+    "description": "Preprocessor for frontend projects.",
+    "main": "gulpfile.js",
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:cov": "jest --coverage",
+        "build": "gulp build",
+        "production": "gulp production",
+        "lint": "eslint www test --cache"
+    },
+    "keywords": [
+        "frontend",
+        "fe",
+        "build"
+    ],
+    "author": "LvChengbin <lvchengbin59@gmail.com>",
+    "license": "ISC",
+    "dependencies": {
+        "@babel/core": "^7.12.9",
+        "@babel/plugin-transform-modules-amd": "^7.12.1",
+        "@lvchengbin/base-convert": "0.0.4",
+        "@lvchengbin/cli-table": "0.0.1",
+        "@lvchengbin/is": "^1.0.5",
+        "@lvchengbin/url-join": "0.0.2",
+        "@z-toolkit/gulp-vue": "git+ssh://git@git.zuoshouyisheng.com:frontend/toolkit/gulp-vue.git",
+        "autoprefixer": "^10.0.2",
+        "cli-style": "0.1.1",
+        "cosmiconfig": "^7.0.0",
+        "crc": "^3.8.0",
+        "cssnano": "^4.1.10",
+        "filesize": "^6.1.0",
+        "glob": "^7.1.6",
+        "gulp": "^4.0.2",
+        "gulp-babel": "^8.0.0",
+        "gulp-buble": "^0.9.0",
+        "gulp-clean": "^0.4.0",
+        "gulp-filter": "^6.0.0",
+        "gulp-imagemin": "^7.1.0",
+        "gulp-postcss": "^9.0.0",
+        "gulp-rename": "^2.0.0",
+        "gulp-stylus": "^2.7.0",
+        "gulp-uglify-es": "^2.0.0",
+        "image-extensions": "^1.1.0",
+        "jsdom": "^16.4.0",
+        "md5-file": "^5.0.0",
+        "plugin-error": "^1.0.1",
+        "postcss": "^8.0.9",
+        "postcss-import": "^12.0.1",
+        "postcss-nested": "^5.0.0",
+        "through2": "^4.0.2",
+        "yargs": "^16.1.1"
+    },
+    "devDependencies": {
+        "@lvchengbin/eslint-plugin-tiring": "^0.0.2",
+        "escape-string-regexp": "^4.0.0",
+        "eslint": "^7.14.0",
+        "jest": "^26.6.3",
+        "vinyl": "^2.2.1"
+    },
+    "optionalDependencies": {
+        "imagemin-gifsicle": "^7.0.0",
+        "imagemin-jpegtran": "^7.0.0",
+        "imagemin-optipng": "^8.0.0",
+        "imagemin-svgo": "^8.0.0"
+    }
+}

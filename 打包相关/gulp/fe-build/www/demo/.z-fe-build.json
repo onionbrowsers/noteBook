@@ -1,0 +1,15 @@
+{
+    "production" : {
+        "host" : "https://web-cdn.zuoshouyisheng.com",
+        "alias" : {
+            "window.process.variable" : "true"
+        }
+    },
+    "dev" : {
+        "web_test_server_id" : "001",
+        "tag" : true,
+        "alias" : [
+            [ "window.process.variable", "true" ]
+        ]
+    }
+}
